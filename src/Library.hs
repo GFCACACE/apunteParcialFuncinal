@@ -3,7 +3,7 @@
 module Library where
 import PdePreludat
 import Data.List (sort, map, sortBy, filter, head, and)
-import qualified Data.Type.Bool as posicionamiento
+
 
 {-Data-}
 data Auto = Auto {
@@ -14,7 +14,15 @@ data Auto = Auto {
 }deriving(Eq,Ord,Show)
 
 
-data Carrera = Carrera Posiciones
+data Carrera = Carrera Posiciones deriving(Eq,Ord,Show)
+
+{-Datos de prueba-}
+mario = Auto {color="rojo", distanciaRecorrida = 20, velocidad = 50, powerup=""}
+luigi = Auto {color="verde", distanciaRecorrida = 12, velocidad = 50, powerup=""}
+
+starChampionship= Carrera [luigi,mario]
+
+
 {-types-}
 type Color = String
 type PowerUp = String
@@ -25,30 +33,30 @@ type Puesto = Number
 
 {-Funciones Auxiliares-}
 posicionamiento :: Posiciones -> Posiciones
-posicionamiento = foldl ordenarCorredor []
+posicionamiento = foldl ordenarAuto []
 
 ordenarAuto :: Posiciones -> Auto -> Posiciones
 ordenarAuto [] auto = [auto]
-ordenarAuto (primero:rest) auto
+ordenarAuto (primero:resto) auto
     | distanciaRecorrida auto > distanciaRecorrida primero = auto:primero:resto
-    | otherwise                          = primero:ordenarCorredor resto auto
+    | otherwise                          = primero:ordenarAuto resto auto
 
 
 diferenciaAbsolutaDistancia::Distancia -> Distancia -> Distancia
 diferenciaAbsolutaDistancia puntoUno puntoDos = (abs . (-) puntoDos) puntoUno
 
 esPrimero::Auto -> Carrera -> Bool
-esPrimero autoUno carrera = head carrera == autoUno
+esPrimero autoUno=  ((==autoUno) . (!!1) . posicionamiento)
 
 {-Funciones Principales-}
 estaCerca:: Auto -> Auto -> Bool
 estaCerca autoUno autoDos = ((<10) . diferenciaAbsolutaDistancia (distanciaRecorrida autoUno) . distanciaRecorrida) autoDos && (/= autoUno) autoDos
 
-
 vaTranquilo::Auto -> Carrera ->Bool
 vaTranquilo autoUno = (not.estaCerca autoUno . (!!2).(&&).esprimero autoUno) posicionamiento carrera
 
 puesto:: Auto -> Carrera -> Puesto
+puesto autoUno carrera = ((+1) . elemIndex autoUno . posicionamiento) carrera
 
 
 -- {-Data-}
