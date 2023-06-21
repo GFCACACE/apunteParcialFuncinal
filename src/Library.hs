@@ -3,7 +3,8 @@
 module Library where
 import PdePreludat
 import Data.List (sort, map, sortBy, filter, head, and)
-import qualified Data.Type.Bool as posicionamiento
+import GHC.Num (Num)
+
 
 
 {-Data-}
@@ -31,7 +32,8 @@ type Distancia = Number
 type Velocidad = Number
 type Posiciones = [Auto]
 type Puesto = Number
-
+type Tiempo = Number
+type Acelerar=(Velocidad ->Velocidad)
 {-Funciones Auxiliares-}
 posicionamiento :: Posiciones -> Posiciones
 posicionamiento = foldl ordenarAuto []
@@ -49,16 +51,25 @@ diferenciaAbsolutaDistancia puntoUno puntoDos = (abs . (-) puntoDos) puntoUno
 esPrimero::Auto -> Posiciones -> Bool
 esPrimero autoUno=  (==autoUno) . (!!1) . posicionamiento
 
+agregarDistancia:: Distancia -> Auto -> Auto
+agregarDistancia distancia auto= auto{distanciaRecorrida = distancia}
+
+
 {-Funciones Principales-}
 estaCerca:: Auto -> Auto -> Bool
 estaCerca autoUno autoDos = ((<10) . diferenciaAbsolutaDistancia (distanciaRecorrida autoUno) . distanciaRecorrida) autoDos && (/= autoUno) autoDos
 
 vaTranquilo::Auto -> Posiciones ->Bool
-vaTranquilo autoUno = not.estaCerca autoUno . (!!2).posicionamiento.(&&).esprimero autoUno . posicionamiento
+vaTranquilo autoUno carrera= (not.estaCerca autoUno . (!!2).posicionamiento.(&&).esPrimero autoUno . posicionamiento) carrera
 
-puesto:: Auto -> Carrera -> Puesto
+puesto:: Auto -> Posiciones -> Puesto
 puesto autoUno carrera = ((+1) . elemIndex autoUno . posicionamiento) carrera
 
+corra::Tiempo -> Auto -> Auto
+corra tiempo auto = agregarDistancia (((+distanciaRecorrida auto). (*tiempo) . velocidad) auto) auto
+
+modificarVelocidad:: Acelerar->Auto->Auto
+modificarVelocidad modificador auto = auto {velocidad = (modificador. velocidad) auto }
 
 -- {-Data-}
 -- data Chocolate = Chocolate {
