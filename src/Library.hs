@@ -3,6 +3,7 @@
 module Library where
 import PdePreludat
 import Data.List (sort, map, sortBy, filter, head, and)
+import qualified Data.Type.Bool as posicionamiento
 
 
 {-Data-}
@@ -45,15 +46,15 @@ ordenarAuto (primero:resto) auto
 diferenciaAbsolutaDistancia::Distancia -> Distancia -> Distancia
 diferenciaAbsolutaDistancia puntoUno puntoDos = (abs . (-) puntoDos) puntoUno
 
-esPrimero::Auto -> Carrera -> Bool
-esPrimero autoUno=  ((==autoUno) . (!!1) . posicionamiento)
+esPrimero::Auto -> Posiciones -> Bool
+esPrimero autoUno=  (==autoUno) . (!!1) . posicionamiento
 
 {-Funciones Principales-}
 estaCerca:: Auto -> Auto -> Bool
 estaCerca autoUno autoDos = ((<10) . diferenciaAbsolutaDistancia (distanciaRecorrida autoUno) . distanciaRecorrida) autoDos && (/= autoUno) autoDos
 
-vaTranquilo::Auto -> Carrera ->Bool
-vaTranquilo autoUno = (not.estaCerca autoUno . (!!2).(&&).esprimero autoUno) posicionamiento carrera
+vaTranquilo::Auto -> Posiciones ->Bool
+vaTranquilo autoUno = not.estaCerca autoUno . (!!2).posicionamiento.(&&).esprimero autoUno . posicionamiento
 
 puesto:: Auto -> Carrera -> Puesto
 puesto autoUno carrera = ((+1) . elemIndex autoUno . posicionamiento) carrera
